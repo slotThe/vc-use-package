@@ -83,7 +83,7 @@ or a symbol representing one possible destination in
              (normalise (arg val)
                (pcase arg
                  (:fetcher (vc-use-package--check-fetcher (mk-string val)))
-                 (:rev (if (= val :last-release) val (mk-string val)))
+                 (:rev (if (eq val :last-release) val (mk-string val)))
                  (:repo (mk-string val))
                  (_ val))))
     (apply #'-concat
