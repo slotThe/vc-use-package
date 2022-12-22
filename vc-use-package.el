@@ -94,7 +94,8 @@ or a symbol representing one possible destination in
   "Primitive error handling for the most common cases."
   (cl-flet ((err (s &rest os)
               (use-package-error (apply #'format s os))))
-    (let* ((keywords (-filter #'keywordp arg))
+    (let* ((keywords (cl-loop for (k _) on arg by #'cddr
+                              collect k))
            (unknown-kws (-difference keywords vc-use-package-keywords)))
       (cond
        (unknown-kws
