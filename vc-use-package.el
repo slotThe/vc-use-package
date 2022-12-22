@@ -104,11 +104,11 @@ or a symbol representing one possible destination in
        ((not (-contains? keywords :fetcher))
         (err ":vc declaration must at least contain the `:fetcher' keyword"))
        ((not (plistp arg))
-        (err "Argument given to %s must be a plist." keywords))))))
+        (use-package-error "Argument given to :vc must be a plist."))))))
 
 (defun use-package-normalize/:vc (name _keyword args)
   (unless (and args (listp (car args)))
-    (use-package-error ":vc wants a list of keywords (and an optional name) as arguments."))
+    (use-package-error ":vc wants a plist as an argument."))
   (let ((arg (car args)))
     (vc-use-package-handle-errors arg)
     (vc-use-package--normalise-args (plist-put arg :name name))))
