@@ -78,16 +78,31 @@ or a symbol representing one possible destination in
                (-filter #'keywordp vc-use-package-allowed-fetchers))))))
 
 (defun vc-use-package--normalise-args (args)
+  "Normalise the plist given to `:vc'."
   (cl-flet ((mk-string (s)
               (if (stringp s) s (symbol-name s)))
             (normalise (arg val)
               (pcase arg
                 (:fetcher (vc-use-package--check-fetcher val))
                 (_ val))))
-    (let ((list (if (plistp args) args (cdr args))))
-      (apply #'-concat
-             (cl-loop for (k v) on list by #'cddr
-                      collect (list k (normalise k (mk-string v))))))))
+    (apply #'-concat
+           (cl-loop for (k v) on args by #'cddr
+                    collect (list k (normalise k (mk-string v)))))))
+
+(defun vc-use-package-handle-errors (arg)
+  "Primitive error handling for the most common cases."
+  (let* ((keywords (-filter #'keywordp arg))
+         (unknown-kws (-difference keywords vc-use-package-allowed-keywords)))
+    (cond
+     (unknown-kws
+      (err "%s declaration contains unknown keywords: %s.  Known keywords are: %s"
+           keyword
+           unknown-kws
+           vc-use-package-allowed-keywords))
+     ((not (-contains? keywords :fetcher))
+      (err "%s declaration must at least contain the `:fetcher' keyword" keyword))
+     ((not (plistp arg))
+      (err "Argument given to %s must be a plist." keywords)))))
 
 (defun use-package-normalize/:vc (name keyword args)
   (cl-flet ((err (s &rest os)
@@ -96,21 +111,8 @@ or a symbol representing one possible destination in
       (err "%s wants a list of keywords (and an optional name) as arguments."
            keyword))
     (let ((arg (car args)))
-      (let* ((keywords (-filter #'keywordp arg))
-             (unknown-kws (-difference keywords vc-use-package-allowed-keywords)))
-        ;; (Primitive) error handling for the most common cases
-        (cond
-         (unknown-kws
-          (err "%s declaration contains unknown keywords: %s.  Known keywords are: %s"
-               keyword
-               unknown-kws
-               vc-use-package-allowed-keywords))
-         ((not (-contains? keywords :fetcher))
-          (err "%s declaration must at least contain the `:fetcher' keyword" keyword))
-         ((not (plistp arg))
-          (err "Argument given to %s must be a plist." keywords)))
-        ;; Some actual normalisation
-        (vc-use-package--normalise-args (plist-put arg :name name))))))
+      (vc-use-package-handle-errors arg)
+      (vc-use-package--normalise-args (plist-put arg :name name)))))
 
 ;;;; Handler
 
