@@ -42,9 +42,8 @@
 
 ;;; Code:
 
-(require 'cl-lib)
 (require 'dash)
-(require 'use-package-core)
+(require 'use-package-ensure)
 
 (defvar vc-use-package-allowed-keywords
   '(:fetcher :repo :rev :backend)
@@ -91,32 +90,30 @@ or a symbol representing one possible destination in
 
 (defun vc-use-package-handle-errors (arg)
   "Primitive error handling for the most common cases."
-  (let* ((keywords (-filter #'keywordp arg))
-         (unknown-kws (-difference keywords vc-use-package-allowed-keywords)))
-    (cond
-     (unknown-kws
-      (err "%s declaration contains unknown keywords: %s.  Known keywords are: %s"
-           keyword
-           unknown-kws
-           vc-use-package-allowed-keywords))
-     ((not (-contains? keywords :fetcher))
-      (err "%s declaration must at least contain the `:fetcher' keyword" keyword))
-     ((not (plistp arg))
-      (err "Argument given to %s must be a plist." keywords)))))
-
-(defun use-package-normalize/:vc (name keyword args)
   (cl-flet ((err (s &rest os)
               (use-package-error (apply #'format s os))))
-    (unless (and args (listp (car args)))
-      (err "%s wants a list of keywords (and an optional name) as arguments."
-           keyword))
-    (let ((arg (car args)))
-      (vc-use-package-handle-errors arg)
-      (vc-use-package--normalise-args (plist-put arg :name name)))))
+    (let* ((keywords (-filter #'keywordp arg))
+           (unknown-kws (-difference keywords vc-use-package-allowed-keywords)))
+      (cond
+       (unknown-kws
+        (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
+             unknown-kws
+             vc-use-package-allowed-keywords))
+       ((not (-contains? keywords :fetcher))
+        (err ":vc declaration must at least contain the `:fetcher' keyword"))
+       ((not (plistp arg))
+        (err "Argument given to %s must be a plist." keywords))))))
+
+(defun use-package-normalize/:vc (name _keyword args)
+  (unless (and args (listp (car args)))
+    (use-package-error ":vc wants a list of keywords (and an optional name) as arguments."))
+  (let ((arg (car args)))
+    (vc-use-package-handle-errors arg)
+    (vc-use-package--normalise-args (plist-put arg :name name))))
 
 ;;;; Handler
 
-(defun use-package-handler/:vc (name-symbol keyword args rest state)
+(defun use-package-handler/:vc (name-symbol _keyword args rest state)
   (let ((body (use-package-process-keywords name-symbol rest state)))
     ;; This happens at macro expansion time, not when the expanded code
     ;; is compiled or evaluated.
