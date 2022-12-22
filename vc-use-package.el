@@ -53,7 +53,7 @@
   '(:github "https://github.com/"
     :gitlab "https://gitlab.com/"
     :codeberg "https://codeberg.org/"
-    :source-hut "https://sr.ht/~")
+    :sourcehut "https://git.sr.ht/~")
   "Places from where to fetch packages.")
 
 (cl-defun vc-use-package--install (&key fetcher repo name rev backend)
