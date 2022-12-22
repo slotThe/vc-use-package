@@ -71,7 +71,7 @@ More specifically, check if it's (i) URL or (ii) either a string
 or a symbol representing one possible destination in
 `vc-use-package-allowed-keywords'."
   (cond
-   ((s-prefix? "https://" val) val)
+   ((string-prefix-p "https://" val) val)
    ((plist-get vc-use-package-allowed-fetchers (intern (concat ":" val))))
    (t (use-package-error
        (format ":fetcher is not a url or one of %s."
