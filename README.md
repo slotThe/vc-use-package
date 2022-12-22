@@ -16,6 +16,14 @@ After that, simply require the package somewhere in your configuration:
 (require 'vc-use-package)
 ```
 
+More comprehensively:
+
+``` emacs-lisp
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
+```
+
 ## Usage
 
 This package adds a new `:vc` keywords to `use-package` declarations,
