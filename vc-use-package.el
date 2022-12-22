@@ -45,11 +45,11 @@
 (require 'dash)
 (require 'use-package-ensure)
 
-(defvar vc-use-package-allowed-keywords
+(defvar vc-use-package-keywords
   '(:fetcher :repo :rev :backend)
   "All arguments that `package-vc-install' supports.")
 
-(defvar vc-use-package-allowed-fetchers
+(defvar vc-use-package-fetchers
   '(:github "https://github.com/"
     :gitlab "https://gitlab.com/"
     :codeberg "https://codeberg.org/"
@@ -60,7 +60,7 @@
   "Thin wrapper around `package-vc-install'.
 This exists so we can have sane keywords arguments, yet don't
 have to go overboard when normalising."
-  (package-vc-install (concat fetcher repo) (intern name) rev backend))
+  (package-vc-install (concat fetcher repo) name rev backend))
 
 ;;;; Normalisation
 
@@ -68,37 +68,39 @@ have to go overboard when normalising."
   "Check whether VAL is a correct `:fetcher' argument.
 More specifically, check if it's (i) URL or (ii) either a string
 or a symbol representing one possible destination in
-`vc-use-package-allowed-keywords'."
+`vc-use-package-keywords'."
   (cond
    ((string-prefix-p "https://" val) val)
-   ((plist-get vc-use-package-allowed-fetchers (intern (concat ":" val))))
+   ((plist-get vc-use-package-fetchers (intern (concat ":" val))))
    (t (use-package-error
        (format ":fetcher is not a url or one of %s."
-               (-filter #'keywordp vc-use-package-allowed-fetchers))))))
+               (-filter #'keywordp vc-use-package-fetchers))))))
 
 (defun vc-use-package--normalise-args (args)
   "Normalise the plist given to `:vc'."
-  (cl-flet ((mk-string (s)
-              (if (stringp s) s (symbol-name s)))
-            (normalise (arg val)
-              (pcase arg
-                (:fetcher (vc-use-package--check-fetcher val))
-                (_ val))))
+  (cl-flet* ((mk-string (s)
+               (if (stringp s) s (symbol-name s)))
+             (normalise (arg val)
+               (pcase arg
+                 (:fetcher (vc-use-package--check-fetcher (mk-string val)))
+                 (:rev (if (= val :last-release) val (mk-string val)))
+                 (:repo (mk-string val))
+                 (_ val))))
     (apply #'-concat
            (cl-loop for (k v) on args by #'cddr
-                    collect (list k (normalise k (mk-string v)))))))
+                    collect (list k (normalise k v))))))
 
 (defun vc-use-package-handle-errors (arg)
   "Primitive error handling for the most common cases."
   (cl-flet ((err (s &rest os)
               (use-package-error (apply #'format s os))))
     (let* ((keywords (-filter #'keywordp arg))
-           (unknown-kws (-difference keywords vc-use-package-allowed-keywords)))
+           (unknown-kws (-difference keywords vc-use-package-keywords)))
       (cond
        (unknown-kws
         (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
              unknown-kws
-             vc-use-package-allowed-keywords))
+             vc-use-package-keywords))
        ((not (-contains? keywords :fetcher))
         (err ":vc declaration must at least contain the `:fetcher' keyword"))
        ((not (plistp arg))
@@ -119,7 +121,7 @@ or a symbol representing one possible destination in
     ;; is compiled or evaluated.
     (if args
         (use-package-concat
-         `((unless (package-installed-p ',(intern (plist-get args :name)))
+         `((unless (package-installed-p ',(plist-get args :name))
              (apply #'vc-use-package--install ',args)))
          body)
       body)))

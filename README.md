@@ -37,10 +37,11 @@ with which you can install packages.  For example:
 The argument to `:vc` is a plist with the following keywords: `:fetcher
 :repo :rev :backend`.
 
-For a list of supported fetchers, see `vc-use-package-allowed-fetchers`.
+For a list of supported fetchers, see `vc-use-package-fetchers`.
 Additionally, `:fetcher` may also be a URL, in which case it is followed
 verbatim.  The `:rev` and `:backend` keywords are given to
-`vc-package-install` as-is.
+`vc-package-install` as-is.  The `:fetcher` and `:repo` arguments may
+either be strings, or symbols (as above).
 
 ### In combination with `use-package-always-ensure`
 
