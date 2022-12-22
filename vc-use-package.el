@@ -1,7 +1,7 @@
 ;;; vc-use-package.el --- Primitive `package-vc' integration into `use-package' -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015  Steckerhalter
-;;               2022  Tony Zorman
+;;               2022  Tony Zorman <soliditsallgood@mailbox.org>
 ;;
 ;; Author: steckerhalter (quelpa-use-package: https://github.com/quelpa/quelpa-use-package/)
 ;;         Tony Zorman   (vc-use-package: https://github.com/slotThe/vc-use-package)
