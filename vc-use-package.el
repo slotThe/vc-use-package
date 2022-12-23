@@ -90,7 +90,7 @@ or a symbol representing one possible destination in
            (cl-loop for (k v) on args by #'cddr
                     collect (list k (normalise k v))))))
 
-(defun vc-use-package-handle-errors (arg)
+(defun vc-use-package--handle-errors (arg)
   "Primitive error handling for the most common cases."
   (cl-flet ((err (s &rest os)
               (use-package-error (apply #'format s os))))
@@ -111,7 +111,7 @@ or a symbol representing one possible destination in
   (unless (and args (listp (car args)))
     (use-package-error ":vc wants a plist as an argument."))
   (let ((arg (car args)))
-    (vc-use-package-handle-errors arg)
+    (vc-use-package--handle-errors arg)
     (vc-use-package--normalise-args (plist-put arg :name name))))
 
 ;;;; Handler
@@ -129,18 +129,18 @@ or a symbol representing one possible destination in
 
 ;;;; Play nice with `use-package-always-ensure'
 
-(defun vc-use-package-override-:ensure (func name-symbol keyword ensure rest state)
+(defun vc-use-package--override-:ensure (func name-symbol keyword ensure rest state)
   (let ((ensure (unless (plist-member rest :vc)
                   ensure)))
     (funcall func name-symbol keyword ensure rest state)))
 
 (defun vc-use-package-activate-advice ()
   (advice-add 'use-package-handler/:ensure :around
-              #'vc-use-package-override-:ensure))
+              #'vc-use-package--override-:ensure))
 
 (defun vc-use-package-deactivate-advice ()
   (advice-remove 'use-package-handler/:ensure
-                 #'vc-use-package-override-:ensure))
+                 #'vc-use-package--override-:ensure))
 
 ;;;; Activate
 
