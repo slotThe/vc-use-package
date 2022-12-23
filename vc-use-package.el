@@ -56,11 +56,13 @@
     :sourcehut "https://git.sr.ht/~")
   "Places from where to fetch packages.")
 
-(cl-defun vc-use-package--install (&key fetcher repo name rev backend)
+(cl-defun vc-use-package--install (&key verbatim fetcher repo name rev backend)
   "Thin wrapper around `package-vc-install'.
 This exists so we can have sane keywords arguments, yet don't
 have to go overboard when normalising."
-  (package-vc-install (concat fetcher repo) name rev backend))
+  (if verbatim
+      (package-vc-install verbatim)
+    (package-vc-install (concat fetcher repo) name rev backend)))
 
 ;;;; Normalisation
 
@@ -103,16 +105,22 @@ or a symbol representing one possible destination in
              unknown-kws
              vc-use-package-keywords))
        ((not (-contains? keywords :fetcher))
-        (err ":vc declaration must at least contain the `:fetcher' keyword"))
+        (err ":vc plist declaration must at least contain the `:fetcher' keyword"))
        ((not (plistp arg))
         (use-package-error "Argument given to :vc must be a plist."))))))
 
 (defun use-package-normalize/:vc (name _keyword args)
-  (unless (and args (listp (car args)))
-    (use-package-error ":vc wants a plist as an argument."))
   (let ((arg (car args)))
-    (vc-use-package--handle-errors arg)
-    (vc-use-package--normalise-args (plist-put arg :name name))))
+    (cl-flet ((spec? (xs)
+                (and (consp xs) (not (keywordp (car xs))))))
+      (pcase arg
+        ;; A symbol or a cons-cell as an input means to verbatim forward
+        ;; the argument to package-vc-install.
+        ((or 'nil 't)                     `(:verbatim ,name))
+        ((or (pred symbolp) (pred spec?)) `(:verbatim ,arg))
+        ;; A plist represents a more complex argument structure.
+        (_ (vc-use-package--handle-errors arg)
+           (vc-use-package--normalise-args (plist-put arg :name name)))))))
 
 ;;;; Handler
 
@@ -122,7 +130,8 @@ or a symbol representing one possible destination in
     ;; is compiled or evaluated.
     (if args
         (use-package-concat
-         `((unless (package-installed-p ',(plist-get args :name))
+         `((unless (package-installed-p ',(or (plist-get args :verbatim)
+                                              (plist-get args :name)))
              (apply #'vc-use-package--install ',args)))
          body)
       body)))
