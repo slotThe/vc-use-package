@@ -42,6 +42,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl-lib))
 (require 'use-package-ensure)
 
 (defvar vc-use-package-keywords
