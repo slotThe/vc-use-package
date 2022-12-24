@@ -42,7 +42,6 @@
 
 ;;; Code:
 
-(require 'dash)
 (require 'use-package-ensure)
 
 (defvar vc-use-package-keywords
@@ -76,38 +75,36 @@ or a symbol representing one possible destination in
    ((plist-get vc-use-package-fetchers (intern (concat ":" val))))
    (t (use-package-error
        (format ":fetcher is not a url or one of %s."
-               (-filter #'keywordp vc-use-package-fetchers))))))
+               (seq-filter #'keywordp vc-use-package-fetchers))))))
 
 (defun vc-use-package--normalise-args (args)
   "Normalise the plist given to `:vc'."
   (cl-flet* ((mk-string (s)
-               (if (stringp s) s (symbol-name s)))
-             (normalise (arg val)
-               (pcase arg
-                 (:fetcher (vc-use-package--check-fetcher (mk-string val)))
-                 (:rev (if (eq val :last-release) val (mk-string val)))
-                 (:repo (mk-string val))
-                 (_ val))))
-    (apply #'-concat
-           (cl-loop for (k v) on args by #'cddr
-                    collect (list k (normalise k v))))))
+	       (if (stringp s) s (symbol-name s)))
+	     (normalise (arg val)
+	       (pcase arg
+		 (:fetcher (vc-use-package--check-fetcher (mk-string val)))
+		 (:rev (if (eq val :last-release) val (mk-string val)))
+		 (:repo (mk-string val))
+		 (_ val))))
+    (cl-loop for (k v) on args by #'cddr
+	     nconc (list k (normalise k v)))))
 
 (defun vc-use-package--handle-errors (arg)
   "Primitive error handling for the most common cases."
   (cl-flet ((err (s &rest os)
-              (use-package-error (apply #'format s os))))
+	      (use-package-error (apply #'format s os))))
     (let* ((keywords (cl-loop for (k _) on arg by #'cddr
-                              collect k))
-           (unknown-kws (-difference keywords vc-use-package-keywords)))
+			      if (memq k vc-use-package-keywords)
+			      do (err ":vc declaration contains unknown \
+keywords: %s.  Known keywords are: %s"
+				      k vc-use-package-keywords)
+			      collect k)))
       (cond
-       (unknown-kws
-        (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
-             unknown-kws
-             vc-use-package-keywords))
-       ((not (-contains? keywords :fetcher))
-        (err ":vc plist declaration must at least contain the `:fetcher' keyword"))
+       ((not (memq :fetcher keywords))
+	(err ":vc plist declaration must at least contain the `:fetcher' keyword"))
        ((not (plistp arg))
-        (use-package-error "Argument given to :vc must be a plist."))))))
+	(use-package-error "Argument given to :vc must be a plist."))))))
 
 (defun use-package-normalize/:vc (name _keyword args)
   (let ((arg (car args)))
@@ -158,9 +155,9 @@ or a symbol representing one possible destination in
 More specifically, insert it after `:unless' so that we only run
 if either `:if', `:when', `:unless' or `:requires' are satisfied."
   (unless (member :vc use-package-keywords)
-    (-let (((b a) (-partition-after-item :unless use-package-keywords)))
-      (setq use-package-keywords
-            (-concat b (cons :vc a))))))
+    (let ((unless (member :unless use-package-keywords)))
+      (when unless
+	(setcdr unless (cons :vc (cdr unless)))))))
 
 (vc-use-package-set-keyword) ; register keyword on require
 
