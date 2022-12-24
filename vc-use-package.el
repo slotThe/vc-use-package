@@ -49,11 +49,11 @@
   '(:fetcher :repo :rev :backend)
   "All arguments that `package-vc-install' supports.")
 
-(defvar vc-use-package-fetchers
-  '(:github "https://github.com/"
-    :gitlab "https://gitlab.com/"
-    :codeberg "https://codeberg.org/"
-    :sourcehut "https://git.sr.ht/~")
+(defconst vc-use-package-fetchers
+  '((:github "https://github.com/")
+    (:gitlab "https://gitlab.com/")
+    (:codeberg "https://codeberg.org/")
+    (:sourcehut "https://git.sr.ht/~"))
   "Places from where to fetch packages.")
 
 (cl-defun vc-use-package--install (&key verbatim fetcher repo name rev backend)
@@ -73,10 +73,10 @@ or a symbol representing one possible destination in
 `vc-use-package-keywords'."
   (cond
    ((string-prefix-p "https://" val) val)
-   ((plist-get vc-use-package-fetchers (intern (concat ":" val))))
+   ((alist-get vc-use-package-fetchers (intern (concat ":" val))))
    (t (use-package-error
        (format ":fetcher is not a url or one of %s."
-               (seq-filter #'keywordp vc-use-package-fetchers))))))
+               (mapcar #'car vc-use-package-fetchers))))))
 
 (defun vc-use-package--normalise-args (args)
   "Normalise the plist given to `:vc'."
