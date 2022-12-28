@@ -96,9 +96,8 @@ or a symbol representing one possible destination in
   (cl-flet ((err (s &rest os)
 	      (use-package-error (apply #'format s os))))
     (let* ((keywords (cl-loop for (k _) on arg by #'cddr
-			      if (memq k vc-use-package-keywords)
-			      do (err ":vc declaration contains unknown \
-keywords: %s.  Known keywords are: %s"
+			      if (not (memq k vc-use-package-keywords))
+			      do (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
 				      k vc-use-package-keywords)
 			      collect k)))
       (cond
