@@ -81,30 +81,30 @@ or a symbol representing one possible destination in
 (defun vc-use-package--normalise-args (args)
   "Normalise the plist given to `:vc'."
   (cl-flet* ((mk-string (s)
-	       (if (stringp s) s (symbol-name s)))
-	     (normalise (arg val)
-	       (pcase arg
-		 (:fetcher (vc-use-package--check-fetcher (mk-string val)))
-		 (:rev (if (eq val :last-release) val (mk-string val)))
-		 (:repo (mk-string val))
-		 (_ val))))
+               (if (stringp s) s (symbol-name s)))
+             (normalise (arg val)
+               (pcase arg
+                 (:fetcher (vc-use-package--check-fetcher (mk-string val)))
+                 (:rev (if (eq val :last-release) val (mk-string val)))
+                 (:repo (mk-string val))
+                 (_ val))))
     (cl-loop for (k v) on args by #'cddr
-	     nconc (list k (normalise k v)))))
+             nconc (list k (normalise k v)))))
 
 (defun vc-use-package--handle-errors (arg)
   "Primitive error handling for the most common cases."
   (cl-flet ((err (s &rest os)
-	      (use-package-error (apply #'format s os))))
+              (use-package-error (apply #'format s os))))
     (let* ((keywords (cl-loop for (k _) on arg by #'cddr
-			      if (not (memq k vc-use-package-keywords))
-			      do (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
-				      k vc-use-package-keywords)
-			      collect k)))
+                              if (not (memq k vc-use-package-keywords))
+                              do (err ":vc declaration contains unknown keywords: %s.  Known keywords are: %s"
+                                      k vc-use-package-keywords)
+                              collect k)))
       (cond
        ((not (memq :fetcher keywords))
-	(err ":vc plist declaration must at least contain the `:fetcher' keyword"))
+        (err ":vc plist declaration must at least contain the `:fetcher' keyword"))
        ((not (plistp arg))
-	(use-package-error "Argument given to :vc must be a plist."))))))
+        (use-package-error "Argument given to :vc must be a plist."))))))
 
 (defun use-package-normalize/:vc (name _keyword args)
   (let ((arg (car args)))
@@ -157,7 +157,7 @@ if either `:if', `:when', `:unless' or `:requires' are satisfied."
   (unless (member :vc use-package-keywords)
     (let ((unless (member :unless use-package-keywords)))
       (when unless
-	(setcdr unless (cons :vc (cdr unless)))))))
+        (setcdr unless (cons :vc (cdr unless)))))))
 
 (vc-use-package-set-keyword) ; register keyword on require
 
