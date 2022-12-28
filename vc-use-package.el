@@ -50,10 +50,10 @@
   "All arguments that `package-vc-install' supports.")
 
 (defconst vc-use-package-fetchers
-  '((:github "https://github.com/")
-    (:gitlab "https://gitlab.com/")
-    (:codeberg "https://codeberg.org/")
-    (:sourcehut "https://git.sr.ht/~"))
+  '(:github "https://github.com/"
+    :gitlab "https://gitlab.com/"
+    :codeberg "https://codeberg.org/"
+    :sourcehut "https://git.sr.ht/~")
   "Places from where to fetch packages.")
 
 (cl-defun vc-use-package--install (&key verbatim fetcher repo name rev backend)
@@ -73,7 +73,7 @@ or a symbol representing one possible destination in
 `vc-use-package-keywords'."
   (cond
    ((string-prefix-p "https://" val) val)
-   ((alist-get vc-use-package-fetchers (intern (concat ":" val))))
+   ((plist-get vc-use-package-fetchers (intern (concat ":" val))))
    (t (use-package-error
        (format ":fetcher is not a url or one of %s."
                (mapcar #'car vc-use-package-fetchers))))))
