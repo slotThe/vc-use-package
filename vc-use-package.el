@@ -60,9 +60,10 @@
   "Thin wrapper around `package-vc-install'.
 This exists so we can have sane keywords arguments, yet don't
 have to go overboard when normalising."
-  (if verbatim
-      (package-vc-install verbatim)
-    (package-vc-install (concat fetcher repo) name rev backend)))
+  (unless (package-installed-p (or verbatim name))
+    (if verbatim
+        (package-vc-install verbatim)
+      (package-vc-install (concat fetcher repo) name rev backend))))
 
 ;;;; Normalisation
 
@@ -125,13 +126,11 @@ or a symbol representing one possible destination in
   (let ((body (use-package-process-keywords name-symbol rest state)))
     ;; This happens at macro expansion time, not when the expanded code
     ;; is compiled or evaluated.
-    (if args
-        (use-package-concat
-         `((unless (package-installed-p ',(or (plist-get args :verbatim)
-                                              (plist-get args :name)))
-             (apply #'vc-use-package--install ',args)))
-         body)
-      body)))
+    (when args
+      (if (bound-and-true-p byte-compile-current-file)
+          (apply #'vc-use-package--install args)
+        (push `(apply #'vc-use-package--install ',args) body)))
+    body))
 
 ;;;; Play nice with `use-package-always-ensure'
 
