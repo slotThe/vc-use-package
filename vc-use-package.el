@@ -7,7 +7,7 @@
 ;;         Tony Zorman   (vc-use-package: https://github.com/slotThe/vc-use-package)
 ;; Keywords: convenience, use-package, package-vc
 ;; Version: 0.1
-;; Package-Requires: ((emacs "29.0") (dash "2.19.1"))
+;; Package-Requires: ((emacs "29.0"))
 ;; Homepage: https://github.com/slotThe/vc-use-package
 
 ;; This file is NOT part of GNU Emacs.
