@@ -63,7 +63,7 @@ have to go overboard when normalising."
   (unless (package-installed-p (or verbatim name))
     (if verbatim
         (package-vc-install verbatim)
-      (package-vc-install (concat fetcher repo) name rev backend))))
+      (package-vc-install (concat fetcher repo) rev backend name))))
 
 ;;;; Normalisation
 
