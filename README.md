@@ -43,6 +43,17 @@ verbatim.  The `:rev` and `:backend` keywords are given to
 `vc-package-install` as-is.  The `:fetcher` and `:repo` arguments may
 either be strings, or symbols (as above).
 
+By giving `:vc` a cons-pair of a package name, as well as a relevant
+plist, one can also directly use the interface specified by
+`package-vc-selected-packages`.  This can be used, for example, to check
+out specific branches:
+
+``` emacs-lisp
+(use-package modus-themes
+  :vc (modus-themes . (:url "https://gitlab.com/protesilaos/modus-themes"
+                       :branch "main")))
+```
+
 ### In combination with `use-package-always-ensure`
 
 When using `use-package-always-ensure`, make sure that the variable is
