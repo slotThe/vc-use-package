@@ -60,7 +60,7 @@
   "Thin wrapper around `package-vc-install'.
 This exists so we can have sane keywords arguments, yet don't
 have to go overboard when normalising."
-  (unless (package-installed-p (or verbatim name))
+  (unless (package-installed-p (or (car verbatim) name))
     (if verbatim
         (package-vc-install verbatim)
       (package-vc-install (concat fetcher repo) rev backend name))))
