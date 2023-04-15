@@ -50,8 +50,8 @@ out specific branches:
 
 ``` emacs-lisp
 (use-package modus-themes
-  :vc (modus-themes . (:url "https://gitlab.com/protesilaos/modus-themes"
-                       :branch "main")))
+  :vc (modus-themes :url "https://gitlab.com/protesilaos/modus-themes"
+                    :branch "main"))
 ```
 
 ### In combination with `use-package-always-ensure`
