@@ -56,11 +56,21 @@
     :sourcehut "https://git.sr.ht/~")
   "Places from where to fetch packages.")
 
+(defun vc-use-package--installed? (verbatim name)
+  "Check if the given package is installed.
+VERBATIM are possible verbatim arguments to `package-vc-install';
+this is either just the name of the package, or a list.  In the
+latter case, the car of the list is the name of the package.  If
+VERBATIM is nil, then NAME is the name of the package."
+  (package-installed-p
+   (or (if (listp verbatim) (car verbatim) verbatim)
+       name)))
+
 (cl-defun vc-use-package--install (&key verbatim fetcher repo name rev backend)
   "Thin wrapper around `package-vc-install'.
 This exists so we can have sane keywords arguments, yet don't
 have to go overboard when normalising."
-  (unless (package-installed-p (or (car verbatim) name))
+  (unless (vc-use-package--installed? verbatim name)
     (if verbatim
         (package-vc-install verbatim)
       (package-vc-install (concat fetcher repo) rev backend name))))
