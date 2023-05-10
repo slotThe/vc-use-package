@@ -43,6 +43,8 @@ verbatim.  The `:rev` and `:backend` keywords are given to
 `vc-package-install` as-is.  The `:fetcher` and `:repo` arguments may
 either be strings, or symbols (as above).
 
+### Directly using `package-vc.el`s interface
+
 By giving `:vc` a cons-pair of a package name, as well as a relevant
 plist, one can also directly use the interface specified by
 `package-vc-selected-packages`.  This can be used, for example, to check
@@ -52,6 +54,15 @@ out specific branches:
 (use-package modus-themes
   :vc (modus-themes :url "https://gitlab.com/protesilaos/modus-themes"
                     :branch "main"))
+```
+
+Another example would be to correctly install a package with an
+"extension" directory:
+
+``` emacs-lisp
+(use-package dirvish
+  :vc (dirvish :url "https://github.com/alexluigit/dirvish"
+               :lisp-dir "extensions/"))
 ```
 
 ### In combination with `use-package-always-ensure`
