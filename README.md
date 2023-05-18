@@ -4,6 +4,12 @@ Primitive integration of `package-vc.el` into [use-package].
 
 ## Installation
 
+Note that, as of 2023-05-16, `vc-use-package` has been
+[merged](https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=2ce279680bf9c1964e98e2aa48a03d6675c386fe)
+into Emacs `master`!
+Thus, if you are using a recent enough version,
+you don't need to install this package and can instead use `use-package`s own `:vc` keyword.
+
 Install with `package-vc-install`:
 
 ``` emacs-lisp
