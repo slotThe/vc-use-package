@@ -117,6 +117,7 @@ or a symbol representing one possible destination in
        ((not (plistp arg))
         (use-package-error "Argument given to :vc must be a plist."))))))
 
+;;;###autoload
 (defun use-package-normalize/:vc (name _keyword args)
   (let ((arg (car args)))
     (cl-flet ((spec? (xs)
@@ -132,6 +133,7 @@ or a symbol representing one possible destination in
 
 ;;;; Handler
 
+;;;###autoload
 (defun use-package-handler/:vc (name-symbol _keyword args rest state)
   (let ((body (use-package-process-keywords name-symbol rest state)))
     ;; This happens at macro expansion time, not when the expanded code
