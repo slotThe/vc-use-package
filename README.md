@@ -13,21 +13,8 @@ you don't need to install this package and can instead use `use-package`s own `:
 Install with `package-vc-install`:
 
 ``` emacs-lisp
-(package-vc-install "https://github.com/slotThe/vc-use-package")
-```
-
-After that, simply require the package somewhere in your configuration:
-
-``` emacs-lisp
-(require 'vc-use-package)
-```
-
-More comprehensively:
-
-``` emacs-lisp
 (unless (package-installed-p 'vc-use-package)
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
 ```
 
 ## Usage
