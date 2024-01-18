@@ -61,12 +61,16 @@ Another example would be to correctly install a package with an
 ### In combination with `use-package-always-ensure`
 
 When using `use-package-always-ensure`, make sure that the variable is
-set at the point when the package is loaded; everything should work
-correctly in that case.
+set before `vc-use-package` is loaded; e.g.,
 
-If setting the variable at a later point is desirable, call
-`vc-use-package-activate-advice` after doing so.  Additionally, the
-`vc-use-package-deactivate-advice` function exists to remove this
-behaviour.
+``` emacs-lisp
+(setopt use-package-always-ensure t)
+(require 'vc-use-package)
+```
+
+Everything should work out of the box in this case.
+
+The function `vc-use-package-activate-advice` may also be called manually to install the necessary advice.
+In the other direction, `vc-use-package-deactivate-advice` exists to remove this behaviour.
 
 [use-package]: https://github.com/jwiegley/use-package/
