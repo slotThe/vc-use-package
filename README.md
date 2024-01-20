@@ -2,19 +2,20 @@
 
 Primitive integration of `package-vc.el` into [use-package].
 
-## Installation
-
-Note that, as of 2023-05-16, `vc-use-package` has been
+**Note**: as of 2023-05-16, `vc-use-package` has been
 [merged](https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=2ce279680bf9c1964e98e2aa48a03d6675c386fe)
 into Emacs `master`!
-Thus, if you are using a recent enough version,
+Thus, if you are using a recent enough version of Emacs 30+,
 you don't need to install this package and can instead use `use-package`s own `:vc` keyword.
+
+## Installation
 
 Install with `package-vc-install`:
 
 ``` emacs-lisp
 (unless (package-installed-p 'vc-use-package)
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
 ```
 
 ## Usage
@@ -40,8 +41,8 @@ either be strings, or symbols (as above).
 
 By giving `:vc` a cons-pair of a package name, as well as a relevant
 plist, one can also directly use the interface specified by
-`package-vc-selected-packages`.  This can be used, for example, to check
-out specific branches:
+`package-vc-selected-packages`.  For example, this can be used to check
+out specific branches, or to exclusively use URLs for fetching packages:
 
 ``` emacs-lisp
 (use-package modus-themes
