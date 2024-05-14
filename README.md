@@ -2,11 +2,19 @@
 
 Primitive integration of `package-vc.el` into [use-package].
 
-**Note**: as of 2023-05-16, `vc-use-package` has been
-[merged](https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=2ce279680bf9c1964e98e2aa48a03d6675c386fe)
-into Emacs `master`!
-Thus, if you are using a recent enough version of Emacs 30+,
-you don't need to install this package and can instead use `use-package`s own `:vc` keyword.
+> [!NOTE]
+> As of 2023-05-16, `vc-use-package` has been
+> [merged](https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=2ce279680bf9c1964e98e2aa48a03d6675c386fe)
+> into Emacs `master`!
+> Thus, if you are using a recent enough version of Emacs 30+,
+> you don't need to install this package and can instead use `use-package`s own `:vc` keyword.
+>
+> **Note that the keyword syntax differs in the core differs from that used in this package!**
+> Instead of a MELPA-style `:vc (:fetcher github :repo oantolin/math-delimiters)`, the built-in keyword
+> uses ELPA-style `:vc (:url "https://github.com/oantolin/math-delimiters")` package specifications.
+> Please refer to the use-package and the Emacs manual for more details.
+> If you want to use the ELPA-style syntax with `vc-use-package`,
+> see [here](#directly-using-package-vcels-interface).
 
 ## Installation
 
