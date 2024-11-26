@@ -82,4 +82,29 @@ Everything should work out of the box in this case.
 The function `vc-use-package-activate-advice` may also be called manually to install the necessary advice.
 In the other direction, `vc-use-package-deactivate-advice` exists to remove this behaviour.
 
+## Further customisations
+
+### Only doing shallow clones ([#20](https://github.com/slotThe/vc-use-package/issues/20))
+
+This can be done by monkey-patching the relevant `vc-«backend»-clone` functions, depending on which backend is used.
+For example,
+
+``` emacs-lisp
+(defun my/vc-git-clone (fn remote directory rev)
+  (if (or (not (string-match-p "elpa" directory))
+	  (null rev))
+      (funcall fn remote directory rev)
+    (cond
+     ((ignore-errors
+        ;; First try if rev is a branch/tag name
+        ;; https://stackoverflow.com/a/48748567/2163429
+        (vc-git--out-ok "clone" "--depth" "1" "--single-branch" "--branch" rev remote directory)))
+     ((vc-git--out-ok "clone" "--single-branch" remote directory)
+      (let ((default-directory directory))
+        (vc-git--out-ok "checkout" rev))))
+    directory))
+
+(advice-add #'vc-git-clone :around #'my/vc-git-clone)
+```
+
 [use-package]: https://github.com/jwiegley/use-package/
