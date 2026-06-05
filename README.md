@@ -9,7 +9,7 @@ Primitive integration of `package-vc.el` into [use-package].
 > Thus, if you are using a recent enough version of Emacs 30+,
 > you don't need to install this package and can instead use `use-package`s own `:vc` keyword.
 >
-> **Note that the keyword syntax differs in the core differs from that used in this package!**
+> **Note that the keyword syntax in the core differs from that used in this package!**
 > Instead of a MELPA-style `:vc (:fetcher github :repo oantolin/math-delimiters)`, the built-in keyword
 > uses ELPA-style `:vc (:url "https://github.com/oantolin/math-delimiters")` package specifications.
 > Please refer to the use-package and the Emacs manual for more details.
